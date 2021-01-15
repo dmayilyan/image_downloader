@@ -5,6 +5,7 @@ import aiofiles
 import aiohttp
 import async_timeout
 from beartype import beartype
+from typing import Any
 
 max_page: dict = {
     1: 720,
@@ -47,11 +48,11 @@ def generate_urls() -> list:
         url: str = url_templates[VOLUME].format(vol=VOLUME, p=p)
         url_list.append(url)
 
-    return url_list[44:45]
+    return url_list
 
 
 @beartype
-async def get_image(url, session):
+async def get_image(url: str, session: Any):
     file_name: str = url.split("/")[-1]
 
     async with async_timeout.timeout(120):
@@ -66,7 +67,7 @@ async def get_image(url, session):
 
 
 @beartype
-async def main(urls, conn):
+async def main(urls: list, conn: Any):
     async with aiohttp.ClientSession(connector=conn) as session:
         tasks = [get_image(url, session) for url in urls]
 
