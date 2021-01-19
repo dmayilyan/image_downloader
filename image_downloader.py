@@ -53,7 +53,7 @@ def generate_urls() -> list:
 
 @beartype
 async def get_image(url: str, session: Any):
-    file_name: str = url.split("/")[-1]
+    file_name: str = f"{url.split('/')[-1].split('-')[0]}.jpg"
 
     async with async_timeout.timeout(120):
         async with session.get(url) as res:
