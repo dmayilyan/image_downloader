@@ -22,7 +22,7 @@ max_page: dict = {
     12: 752,
     13: 688,
 }
-VOLUME: int = 1
+VOLUME: int = 3
 
 url_templates: dict = {
     1: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Հայկական_Սովետական_Հանրագիտարան_(Soviet_Armenian_Encyclopedia)_{vol}.djvu/page{p}-2000px-Հայկական_Սովետական_Հանրագիտարան_(Soviet_Armenian_Encyclopedia)_{vol}.djvu.jpg",
@@ -40,6 +40,16 @@ url_templates: dict = {
     13: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Հայկական_Սովետական_Հանրագիտարան_(Soviet_Armenian_Encyclopedia)_{vol}.djvu/page{p}-2197px-Հայկական_Սովետական_Հանրագիտարան_(Soviet_Armenian_Encyclopedia)_{vol}.djvu.jpg",
 }
 
+def file_exists(filename):
+    filename = os.path.join("HSH", filename)
+    try:
+        if os.path.exists(filename) and os.stat(filename).st_size != 0:
+            return True
+    except FileNotFoundError as fnf:
+        return True
+
+    return False
+    
 
 @beartype
 def generate_urls() -> list:
@@ -53,7 +63,9 @@ def generate_urls() -> list:
 
 @beartype
 async def get_image(url: str, session: Any):
-    file_name: str = f"{url.split('/')[-1].split('-')[0]}.jpg"
+    file_name: str = f"HSH_vol{VOLUME}_{url.split('/')[-1].split('-')[0]}.jpg"
+    if file_exists(file_name):
+        return f"File {file_name} already exists."
 
     async with async_timeout.timeout(120):
         async with session.get(url) as res:
